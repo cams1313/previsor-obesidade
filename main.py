@@ -75,9 +75,11 @@ transporte = transporte_map[transporte]
 # Carregar modelo e scaler
 modelo_path = 'model/modelo_obesidade.pkl'
 scaler_path = 'model/scaler.pkl'
+encoder_path = "model/label_y.pkl"
 
 modelo = joblib.load(modelo_path)
 scaler = joblib.load(scaler_path)
+le_y = joblib.load(encoder_path)
 
 if st.button('Prever'):
 

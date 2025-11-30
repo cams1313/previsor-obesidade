@@ -4,7 +4,7 @@ import numpy as np
 import xgboost
 import pandas as pd
 import joblib
-import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier
 
 # Configuração da página
 st.set_page_config(page_title="Previsão de Obesidade teste")
@@ -108,3 +108,4 @@ if st.button('Prever'):
     resultado = label_map.get(resultado_num, "Indefinido")
 
     st.success(f'O nível de obesidade previsto é: **{resultado}**')
+

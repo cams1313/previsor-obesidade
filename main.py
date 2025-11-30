@@ -1,7 +1,6 @@
 import streamlit as st
 import pickle
 import numpy as np
-import xgboost
 import pandas as pd
 import joblib
 from sklearn.ensemble import RandomForestClassifier
@@ -108,4 +107,5 @@ if st.button('Prever'):
     resultado = label_map.get(resultado_num, "Indefinido")
 
     st.success(f'O nível de obesidade previsto é: **{resultado}**')
+
 

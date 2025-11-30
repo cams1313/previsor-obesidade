@@ -81,6 +81,15 @@ modelo = joblib.load(modelo_path)
 scaler = joblib.load(scaler_path)
 le_y = joblib.load(encoder_path)
 
+# MAPA DE CLASSES — PARA MOSTRAR TEXTO NA TELA
+label_map = {
+    1: "Abaixo do peso",
+    2: "Peso normal",
+    3: "Sobrepeso",
+    4: "Obesidade"
+}
+
+# Botão de previsão
 if st.button('Prever'):
 
     dados = np.array([[  
@@ -94,7 +103,7 @@ if st.button('Prever'):
 
     pred = modelo.predict(dados_scaled)
 
-    resultado = le_y.inverse_transform(pred)[0]
+    resultado_num = int(pred[0])
+    resultado = label_map.get(resultado_num, "Indefinido")
 
     st.success(f'O nível de obesidade previsto é: **{resultado}**')
-

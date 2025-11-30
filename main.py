@@ -92,9 +92,9 @@ if st.button('Prever'):
 
     dados_scaled = scaler.transform(dados)
 
-pred = modelo.predict(dados_scaled)
+    pred = modelo.predict(dados_scaled)
 
-resultado = le_y.inverse_transform(pred)[0]
+    resultado = le_y.inverse_transform(pred)[0]
 
-st.success(f'O nível de obesidade previsto é: **{resultado}**')
+    st.success(f'O nível de obesidade previsto é: **{resultado}**')
 

@@ -92,15 +92,9 @@ if st.button('Prever'):
 
     dados_scaled = scaler.transform(dados)
 
-    previsao = modelo.predict(dados_scaled)
+pred = modelo.predict(dados_scaled)
 
-    mapa_classes = {
-        1: "Abaixo do peso",
-        2: "Peso normal",
-        3: "Sobrepeso",
-        4: "Obesidade"
-    }
+resultado = le_y.inverse_transform(pred)[0]
 
-    classe = mapa_classes.get(previsao[0], "Desconhecido")
+st.success(f'O nível de obesidade previsto é: **{resultado}**')
 
-    st.success(f'O nível de obesidade previsto é: **{classe}**')

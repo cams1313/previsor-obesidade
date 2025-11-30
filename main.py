@@ -73,8 +73,8 @@ transporte_map = {'Carro': 0, 'Bicicleta': 1, 'Moto': 2, 'Transporte público': 
 transporte = transporte_map[transporte]
 
 # Carregar modelo e scaler
-modelo_path = 'C:/Users/camil/OneDrive/Área de Trabalho/Pessoal/Pós Graduação/Fase 4/Pipeline/modelo_obesidade.pkl'
-scaler_path = 'C:/Users/camil/OneDrive/Área de Trabalho/Pessoal/Pós Graduação/Fase 4/Pipeline/scaler.pkl'
+modelo_path = 'model/modelo_obesidade.pkl'
+scaler_path = 'model/scaler.pkl'
 
 modelo = joblib.load(modelo_path)
 scaler = joblib.load(scaler_path)

@@ -16,8 +16,12 @@ st.write("Por favor, insira os dados:")
 # -------------------------------
 # Carregar modelo e encoder
 # -------------------------------
-model = joblib.load("modelo_obesidade.pkl")
-le = joblib.load("label_encoder.pkl")
+modelo_path = 'model/modelo_obesidade.pkl'
+encoder_path = "model/label_encoder.pkl"
+
+modelo = joblib.load(modelo_path)
+le_y = joblib.load(encoder_path)
+
 
 # Tradução das classes
 TRADUCAO_LABELS = {

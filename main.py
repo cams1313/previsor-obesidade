@@ -23,8 +23,7 @@ frequencia_alcool = st.selectbox('Com que frequência você consome bebidas alco
 lanches_entre_refeicoes = st.selectbox('Você come alguma coisa entre as refeições?', ['Sempre', 'Frequentemente', 'Às vezes', 'Não'])
 transporte = st.selectbox('Qual meio de transporte você costuma usar?', ['Carro', 'Bicicleta', 'Moto', 'Transporte público', 'A pé'])
 idade = st.number_input('Idade', min_value=0)
-altura = st.number_input('Altura (cm)', min_value=0.0)
-peso = st.number_input('Peso (kg)', min_value=0.0)
+
 
 # Consumo de vegetais
 vegatais_opcoes = ['Às vezes', 'Sempre', 'Nunca']

@@ -101,9 +101,16 @@ if st.button('Prever'):
 
     dados_scaled = scaler.transform(dados)
 
+    probs = modelo.predict_proba(dados_scaled)[0]
+
     pred = modelo.predict(dados_scaled)
 
     resultado_num = int(pred[0])
     resultado = label_map.get(resultado_num, "Indefinido")
 
     st.success(f'O nível de obesidade previsto é: **{resultado}**')
+
+  # Probabilidades detalhadas
+    st.subheader("Probabilidades:")
+    for i, p in enumerate(probs):
+        st.write(f"{label_map[i]}: {p*100:.1f}%")

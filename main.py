@@ -1,21 +1,13 @@
 import streamlit as st
-import pickle
-import numpy as np
 import pandas as pd
 import joblib
-import xgboost
 
-# Configuração da página
-st.set_page_config(page_title="Previsão de Obesidade")
+#Configuração da página
+st.set_page_config(page_title="Classificador de Nível de Obesidade")
 
-# Título
-st.title('Previsão de Obesidade')
 
-st.write("Por favor, insira os dados:")
+#Carregar modelo e encoder
 
-# -------------------------------
-# Carregar modelo e encoder
-# -------------------------------
 modelo_path = 'model/modelo_obesidade.pkl'
 encoder_path = "model/label_encoder.pkl"
 
@@ -23,7 +15,7 @@ modelo = joblib.load(modelo_path)
 le_y = joblib.load(encoder_path)
 
 
-# Tradução das classes
+#Tradução das classes
 TRADUCAO_LABELS = {
     "Insufficient_Weight": "Peso insuficiente",
     "Normal_Weight": "Peso normal",
@@ -34,7 +26,7 @@ TRADUCAO_LABELS = {
     "Obesity_Type_III": "Obesidade tipo III"
 }
 
-# Ordem das features usadas no modelo
+#Ordem das features usadas no modelo
 FEATURES = [
     'genero', 'idade', 'altura', 'peso',
     'frequencia_alimentos_caloricos', 'consumo_vegetais',
@@ -48,31 +40,31 @@ FEATURES = [
     'transporte_Public_Transportation', 'transporte_Walking'
 ]
 
-# -------------------------------
-# Função de previsão
-# -------------------------------
+
+#Função de previsão
+
 def prever_obesidade(dados):
     df = pd.DataFrame([dados])[FEATURES]
 
-    # prever com o modelo certo
+    #prever com o modelo certo
     pred_num = modelo.predict(df)[0]
 
-    # inverter label encoding
+    #inverter label encoding
     pred_en = le_y.inverse_transform([pred_num])[0]
 
-    # traduzir para português
+    #traduzir para português
     pred_pt = TRADUCAO_LABELS[pred_en]
 
     return pred_pt
 
 
-# -------------------------------
-# Interface Streamlit
-# -------------------------------
+
+#Interface Streamlit
+
 st.title("Classificador de Nível de Obesidade")
 st.write("Preencha os dados abaixo para obter a previsão:")
 
-# Inputs
+#Inputs
 genero = st.selectbox("Gênero", ["Feminino", "Masculino"])
 genero = 1 if genero == "Masculino" else 0
 
@@ -104,7 +96,7 @@ lanches_pt = st.selectbox(
     ["Nunca", "Às vezes", "Frequentemente", "Sempre"]
 )
 
-# Mapear para valores originais que o modelo reconhece
+#Mapear para valores originais que o modelo reconhece
 mapa_lanches = {
     "Nunca": "Never",
     "Às vezes": "Sometimes",
@@ -114,7 +106,7 @@ mapa_lanches = {
 
 lanches = mapa_lanches[lanches_pt]
 
-# Binarizar como antes
+#Binarizar como antes
 lanches_entre_refeicoes_Always = 1 if lanches == "Always" else 0
 lanches_entre_refeicoes_Frequently = 1 if lanches == "Frequently" else 0
 lanches_entre_refeicoes_Sometimes = 1 if lanches == "Sometimes" else 0
@@ -142,9 +134,10 @@ transporte_Public_Transportation = 1 if transporte == "Public_Transportation" el
 transporte_Walking = 1 if transporte == "Walking" else 0
 
 
-# -------------------------------
-# Montar dicionário final
-# -------------------------------
+
+#Montar dicionário final
+
+
 dados_paciente = {
     'genero': genero,
     'idade': idade,
@@ -172,9 +165,9 @@ dados_paciente = {
     'transporte_Walking': transporte_Walking
 }
 
-# -------------------------------
-# Botão para prever
-# -------------------------------
+
+#Botão para prever
+
 if st.button("Prever Nível de Obesidade"):
     pred = prever_obesidade(dados_paciente)
     st.success(f"**Previsão: {pred}**")

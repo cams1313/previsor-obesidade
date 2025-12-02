@@ -3,7 +3,7 @@ import pickle
 import numpy as np
 import pandas as pd
 import joblib
-from sklearn.ensemble import RandomForestClassifier
+import xgboost
 
 # Configuração da página
 st.set_page_config(page_title="Previsão de Obesidade")

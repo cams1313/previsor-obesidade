@@ -22,7 +22,7 @@ historico_familiar = st.selectbox('Algum membro da família sofreu ou sofre de e
 frequencia_alcool = st.selectbox('Com que frequência você consome bebidas alcoólicas?', ['Sempre', 'Frequentemente', 'Às vezes', 'Não'])
 lanches_entre_refeicoes = st.selectbox('Você come alguma coisa entre as refeições?', ['Sempre', 'Frequentemente', 'Às vezes', 'Não'])
 transporte = st.selectbox('Qual meio de transporte você costuma usar?', ['Carro', 'Bicicleta', 'Moto', 'Transporte público', 'A pé'])
-
+idade = st.number_input('Idade_cat', min_value=0)
 
 
 # Consumo de vegetais
@@ -92,7 +92,7 @@ label_map = {
 if st.button('Prever'):
 
     dados = np.array([[  
-        genero, historico_familiar, frequencia_alimentos_caloricos,
+        genero, idade, historico_familiar, frequencia_alimentos_caloricos,
         consumo_vegetais, qtd_refeicoes_diarias, lanches_entre_refeicoes, fumante,
         consumo_agua, monitora_calorias, frequencia_atividade_fisica, tempo_tecnologia,
         frequencia_alcool, transporte

@@ -53,16 +53,23 @@ FEATURES = [
 # -------------------------------
 def prever_obesidade(dados):
     df = pd.DataFrame([dados])[FEATURES]
-    pred_num = model.predict(df)[0]
-    pred_en = le.inverse_transform([pred_num])[0]
+
+    # prever com o modelo certo
+    pred_num = modelo.predict(df)[0]
+
+    # inverter label encoding
+    pred_en = le_y.inverse_transform([pred_num])[0]
+
+    # traduzir para português
     pred_pt = TRADUCAO_LABELS[pred_en]
+
     return pred_pt
 
 
 # -------------------------------
 # Interface Streamlit
 # -------------------------------
-st.title("🔍 Classificador de Nível de Obesidade")
+st.title("Classificador de Nível de Obesidade")
 st.write("Preencha os dados abaixo para obter a previsão:")
 
 # Inputs
@@ -140,6 +147,8 @@ dados_paciente = {
 # -------------------------------
 # Botão para prever
 # -------------------------------
-if st.button("🔮 Prever Nível de Obesidade"):
+if st.button("Prever Nível de Obesidade"):
     pred = prever_obesidade(dados_paciente)
     st.success(f"**Previsão: {pred}**")
+
+    

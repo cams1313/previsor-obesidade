@@ -99,20 +99,48 @@ historico_familiar = st.selectbox("Histórico familiar de obesidade?", ["Não", 
 historico_familiar_no = 1 if historico_familiar == "Não" else 0
 historico_familiar_yes = 1 if historico_familiar == "Sim" else 0
 
-lanches = st.selectbox("Lanches entre refeições", 
-                       ["Never", "Sometimes", "Frequently", "Always"])
+lanches_pt = st.selectbox(
+    "Lanches entre refeições",
+    ["Nunca", "Às vezes", "Frequentemente", "Sempre"]
+)
+
+# Mapear para valores originais que o modelo reconhece
+mapa_lanches = {
+    "Nunca": "Never",
+    "Às vezes": "Sometimes",
+    "Frequentemente": "Frequently",
+    "Sempre": "Always"
+}
+
+lanches = mapa_lanches[lanches_pt]
+
+# Binarizar como antes
 lanches_entre_refeicoes_Always = 1 if lanches == "Always" else 0
 lanches_entre_refeicoes_Frequently = 1 if lanches == "Frequently" else 0
 lanches_entre_refeicoes_Sometimes = 1 if lanches == "Sometimes" else 0
 lanches_entre_refeicoes_no = 1 if lanches == "Never" else 0
 
-transporte = st.selectbox("Transporte", 
-                          ["Automobile", "Bike", "Motorbike", "Public_Transportation", "Walking"])
+transporte_pt = st.selectbox(
+    "Transporte",
+    ["Carro", "Bicicleta", "Motocicleta", "Transporte público", "Caminhada"]
+)
+
+mapa_transporte = {
+    "Carro": "Automobile",
+    "Bicicleta": "Bike",
+    "Motocicleta": "Motorbike",
+    "Transporte público": "Public_Transportation",
+    "Caminhada": "Walking"
+}
+
+transporte = mapa_transporte[transporte_pt]
+
 transporte_Automobile = 1 if transporte == "Automobile" else 0
 transporte_Bike = 1 if transporte == "Bike" else 0
 transporte_Motorbike = 1 if transporte == "Motorbike" else 0
 transporte_Public_Transportation = 1 if transporte == "Public_Transportation" else 0
 transporte_Walking = 1 if transporte == "Walking" else 0
+
 
 # -------------------------------
 # Montar dicionário final

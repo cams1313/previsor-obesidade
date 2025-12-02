@@ -13,103 +13,129 @@ st.title('Previsão de Obesidade')
 
 st.write("Por favor, insira os dados:")
 
-# Entradas do usuário
-genero = st.selectbox('Gênero', ['Masculino', 'Feminino'])
-frequencia_alimentos_caloricos = st.selectbox('Você consome frequentemente alimentos com alto teor calórico?', ['Sim', 'Não'])
-fumante = st.selectbox('Você fuma?', ['Sim', 'Não'])
-monitora_calorias = st.selectbox('Você monitora seu consumo de calorias?', ['Sim', 'Não'])
-historico_familiar = st.selectbox('Algum membro da família sofreu ou sofre de excesso de peso?', ['Sim', 'Não'])
-frequencia_alcool = st.selectbox('Com que frequência você consome bebidas alcoólicas?', ['Sempre', 'Frequentemente', 'Às vezes', 'Não'])
-lanches_entre_refeicoes = st.selectbox('Você come alguma coisa entre as refeições?', ['Sempre', 'Frequentemente', 'Às vezes', 'Não'])
-transporte = st.selectbox('Qual meio de transporte você costuma usar?', ['Carro', 'Bicicleta', 'Moto', 'Transporte público', 'A pé'])
-idade = st.number_input('Idade_cat', min_value=0)
+# -------------------------------
+# Carregar modelo e encoder
+# -------------------------------
+model = joblib.load("modelo_obesidade.pkl")
+le = joblib.load("label_encoder.pkl")
 
-
-# Consumo de vegetais
-vegatais_opcoes = ['Às vezes', 'Sempre', 'Nunca']
-vegatais_entrada = st.selectbox('Frequência de Consumo de Vegetais', vegatais_opcoes)
-veg_map = {'Às vezes': 2, 'Sempre': 3, 'Nunca': 1}
-consumo_vegetais = veg_map[vegatais_entrada]
-
-# Número de refeições principais
-nrp_opcoes = ['Mais de três', 'Entre 1 e 2', '3']
-nrp_entrada = st.selectbox('Número de Refeições Principais', nrp_opcoes)
-nrp_map = {'Mais de três': 3, 'Entre 1 e 2': 1, '3': 2}
-qtd_refeicoes_diarias = nrp_map[nrp_entrada]
-
-# Consumo de água
-agua_opcoes = ['Entre 1L e 2L', 'Mais que 2L', 'Menos de um litro']
-agua_entrada = st.selectbox('Consumo diário de água', agua_opcoes)
-agua_map = {'Menos de um litro': 1, 'Entre 1L e 2L': 2, 'Mais que 2L': 3}
-consumo_agua = agua_map[agua_entrada]
-
-# Tempo usando tecnologia
-tec_opcoes = ['Eu não uso', '0–2 horas', '3–5 horas']
-tec_entrada = st.selectbox('Tempo de utilização de dispositivos tecnológicos (horas por dia)', tec_opcoes)
-tec_map = {'Eu não uso': 1, '0–2 horas': 2, '3–5 horas': 3}
-tempo_tecnologia = tec_map[tec_entrada]
-
-# Frequência de atividade física
-atv_opcoes = ['Eu não pratico', '1 ou 2 dias', '2 ou 4 dias', '4 ou 5 dias']
-atv_entrada = st.selectbox('Frequência de atividade física (vezes por semana)', atv_opcoes)
-atv_map = {'Eu não pratico': 1, '1 ou 2 dias': 2, '2 ou 4 dias': 3, '4 ou 5 dias': 4}
-frequencia_atividade_fisica = atv_map[atv_entrada]
-
-# Codificação numérica
-genero = 1 if genero == 'Masculino' else 0
-frequencia_alimentos_caloricos = 1 if frequencia_alimentos_caloricos == 'Sim' else 0
-fumante = 1 if fumante == 'Sim' else 0
-monitora_calorias = 1 if monitora_calorias == 'Sim' else 0
-historico_familiar = 1 if historico_familiar == 'Sim' else 0
-
-alcool_map = {'Sempre': 0, 'Frequentemente': 1, 'Às vezes': 2, 'Não': 3}
-frequencia_alcool = alcool_map[frequencia_alcool]
-
-lanches_entre_refeicoes_map = {'Sempre': 0, 'Frequentemente': 1, 'Às vezes': 2, 'Não': 3}
-lanches_entre_refeicoes = lanches_entre_refeicoes_map[lanches_entre_refeicoes]
-
-transporte_map = {'Carro': 0, 'Bicicleta': 1, 'Moto': 2, 'Transporte público': 3, 'A pé': 4}
-transporte = transporte_map[transporte]
-
-# Carregar modelo e scaler
-modelo_path = 'model/modelo_obesidade.pkl'
-scaler_path = 'model/scaler.pkl'
-encoder_path = "model/label_y.pkl"
-
-modelo = joblib.load(modelo_path)
-scaler = joblib.load(scaler_path)
-le_y = joblib.load(encoder_path)
-
-# MAPA DE CLASSES — PARA MOSTRAR TEXTO NA TELA
-label_map = {
-    0: "Abaixo do peso",
-    1: "Peso normal",
-    2: "Sobrepeso",
-    3: "Obesidade"
+# Tradução das classes
+TRADUCAO_LABELS = {
+    "Insufficient_Weight": "Peso insuficiente",
+    "Normal_Weight": "Peso normal",
+    "Overweight_Level_I": "Sobrepeso nível I",
+    "Overweight_Level_II": "Sobrepeso nível II",
+    "Obesity_Type_I": "Obesidade tipo I",
+    "Obesity_Type_II": "Obesidade tipo II",
+    "Obesity_Type_III": "Obesidade tipo III"
 }
 
-# Botão de previsão
-if st.button('Prever'):
+# Ordem das features usadas no modelo
+FEATURES = [
+    'genero', 'idade', 'altura', 'peso',
+    'frequencia_alimentos_caloricos', 'consumo_vegetais',
+    'qtd_refeicoes_diarias', 'fumante', 'consumo_agua',
+    'monitora_calorias', 'frequencia_atividade_fisica',
+    'tempo_tecnologia', 'frequencia_alcool',
+    'historico_familiar_no', 'historico_familiar_yes',
+    'lanches_entre_refeicoes_Always', 'lanches_entre_refeicoes_Frequently',
+    'lanches_entre_refeicoes_Sometimes', 'lanches_entre_refeicoes_no',
+    'transporte_Automobile', 'transporte_Bike', 'transporte_Motorbike',
+    'transporte_Public_Transportation', 'transporte_Walking'
+]
 
-    dados = np.array([[  
-        genero, idade, historico_familiar, frequencia_alimentos_caloricos,
-        consumo_vegetais, qtd_refeicoes_diarias, lanches_entre_refeicoes, fumante,
-        consumo_agua, monitora_calorias, frequencia_atividade_fisica, tempo_tecnologia,
-        frequencia_alcool, transporte
-    ]])
+# -------------------------------
+# Função de previsão
+# -------------------------------
+def prever_obesidade(dados):
+    df = pd.DataFrame([dados])[FEATURES]
+    pred_num = model.predict(df)[0]
+    pred_en = le.inverse_transform([pred_num])[0]
+    pred_pt = TRADUCAO_LABELS[pred_en]
+    return pred_pt
 
-    dados_scaled = scaler.transform(dados)
 
-    probs = modelo.predict_proba(dados_scaled)[0]
+# -------------------------------
+# Interface Streamlit
+# -------------------------------
+st.title("🔍 Classificador de Nível de Obesidade")
+st.write("Preencha os dados abaixo para obter a previsão:")
 
-    pred = modelo.predict(dados_scaled)
+# Inputs
+genero = st.selectbox("Gênero", ["Feminino", "Masculino"])
+genero = 1 if genero == "Masculino" else 0
 
-    resultado_num = int(pred[0])
-    resultado = label_map.get(resultado_num, "Indefinido")
+idade = st.number_input("Idade", min_value=10, max_value=100, value=25)
+altura = st.number_input("Altura (m)", min_value=1.20, max_value=2.20, value=1.70)
+peso = st.number_input("Peso (kg)", min_value=30, max_value=250, value=70)
 
-    st.success(f'O nível de obesidade previsto é: **{resultado}**')
+frequencia_alimentos_caloricos = st.slider("Frequência de alimentos calóricos (0–3)", 0, 3, 1)
+consumo_vegetais = st.slider("Consumo de vegetais (1–3)", 1, 3, 2)
+qtd_refeicoes_diarias = st.slider("Quantidade de refeições por dia", 1, 4, 3)
 
-  # Probabilidades detalhadas
-    st.subheader("Probabilidades:")
-    for i, p in enumerate(probs):
-        st.write(f"{label_map[i]}: {p*100:.1f}%")
+fumante = st.selectbox("Fumante", ["Não", "Sim"])
+fumante = 1 if fumante == "Sim" else 0
+
+consumo_agua = st.slider("Consumo de água (1–3)", 1, 3, 2)
+monitora_calorias = st.selectbox("Monitora calorias?", ["Não", "Sim"])
+monitora_calorias = 1 if monitora_calorias == "Sim" else 0
+
+frequencia_atividade_fisica = st.slider("Frequência de atividade física (0–3)", 0, 3, 1)
+tempo_tecnologia = st.slider("Tempo diário em tecnologia (0–2)", 0, 2, 1)
+frequencia_alcool = st.slider("Frequência de consumo de álcool (0–3)", 0, 3, 1)
+
+historico_familiar = st.selectbox("Histórico familiar de obesidade?", ["Não", "Sim"])
+historico_familiar_no = 1 if historico_familiar == "Não" else 0
+historico_familiar_yes = 1 if historico_familiar == "Sim" else 0
+
+lanches = st.selectbox("Lanches entre refeições", 
+                       ["Never", "Sometimes", "Frequently", "Always"])
+lanches_entre_refeicoes_Always = 1 if lanches == "Always" else 0
+lanches_entre_refeicoes_Frequently = 1 if lanches == "Frequently" else 0
+lanches_entre_refeicoes_Sometimes = 1 if lanches == "Sometimes" else 0
+lanches_entre_refeicoes_no = 1 if lanches == "Never" else 0
+
+transporte = st.selectbox("Transporte", 
+                          ["Automobile", "Bike", "Motorbike", "Public_Transportation", "Walking"])
+transporte_Automobile = 1 if transporte == "Automobile" else 0
+transporte_Bike = 1 if transporte == "Bike" else 0
+transporte_Motorbike = 1 if transporte == "Motorbike" else 0
+transporte_Public_Transportation = 1 if transporte == "Public_Transportation" else 0
+transporte_Walking = 1 if transporte == "Walking" else 0
+
+# -------------------------------
+# Montar dicionário final
+# -------------------------------
+dados_paciente = {
+    'genero': genero,
+    'idade': idade,
+    'altura': altura,
+    'peso': peso,
+    'frequencia_alimentos_caloricos': frequencia_alimentos_caloricos,
+    'consumo_vegetais': consumo_vegetais,
+    'qtd_refeicoes_diarias': qtd_refeicoes_diarias,
+    'fumante': fumante,
+    'consumo_agua': consumo_agua,
+    'monitora_calorias': monitora_calorias,
+    'frequencia_atividade_fisica': frequencia_atividade_fisica,
+    'tempo_tecnologia': tempo_tecnologia,
+    'frequencia_alcool': frequencia_alcool,
+    'historico_familiar_no': historico_familiar_no,
+    'historico_familiar_yes': historico_familiar_yes,
+    'lanches_entre_refeicoes_Always': lanches_entre_refeicoes_Always,
+    'lanches_entre_refeicoes_Frequently': lanches_entre_refeicoes_Frequently,
+    'lanches_entre_refeicoes_Sometimes': lanches_entre_refeicoes_Sometimes,
+    'lanches_entre_refeicoes_no': lanches_entre_refeicoes_no,
+    'transporte_Automobile': transporte_Automobile,
+    'transporte_Bike': transporte_Bike,
+    'transporte_Motorbike': transporte_Motorbike,
+    'transporte_Public_Transportation': transporte_Public_Transportation,
+    'transporte_Walking': transporte_Walking
+}
+
+# -------------------------------
+# Botão para prever
+# -------------------------------
+if st.button("🔮 Prever Nível de Obesidade"):
+    pred = prever_obesidade(dados_paciente)
+    st.success(f"**Previsão: {pred}**")
